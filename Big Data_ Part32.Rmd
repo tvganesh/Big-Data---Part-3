@@ -1,0 +1,132 @@
+
+---
+title: "Big Data: Part32"
+output:
+  html_document:
+    toc: true
+---
+
+
+```{r}
+# Load the SparkR library
+library(SparkR)
+# Initiate a SparkR session
+sparkR.session()
+tendulkar1 <- read.df("/FileStore/tables/tendulkar.csv", 
+                header = "true", 
+                delimiter = ",", 
+                source = "csv", 
+                inferSchema = "true", 
+                na.strings = "")
+
+# Check the dimensions of the dataframe
+df=SparkR::select(tendulkar1, "Runs", "BF","Mins")
+head(SparkR::collect(df))
+```
+
+
+```{r}
+# Load the SparkR library
+library(SparkR)
+# Initiate a SparkR session
+sparkR.session()
+tendulkar1 <- read.df("/FileStore/tables/tendulkar.csv", 
+                header = "true", 
+                delimiter = ",", 
+                source = "csv", 
+                inferSchema = "true", 
+                na.strings = "")
+
+# Check the dimensions of the dataframe
+df=SparkR::select(tendulkar1,"*")
+head(SparkR::collect(df))
+```
+
+
+```{r}
+sparkR.session()
+
+tendulkar1 <- read.df("/FileStore/tables/tendulkar.csv", 
+				header = "true", 
+				delimiter = ",", 
+				source = "csv", 
+				inferSchema = "true", 
+				na.strings = "")
+
+print(dim(tendulkar1))
+tendulkar1 <-SparkR::filter(tendulkar1,tendulkar1$Runs != "DNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "TDNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "absent")
+print(dim(tendulkar1))
+
+# Cast the string type Runs to double
+withColumn(tendulkar1, "Runs", cast(tendulkar1$Runs, "double"))
+head(SparkR::distinct(tendulkar1[,"Runs"]),20)
+# Remove the "* indicating not out
+tendulkar1$Runs=SparkR::regexp_replace(tendulkar1$Runs, "\\*", "")
+df=SparkR::select(tendulkar1,"*")
+head(SparkR::collect(df))
+```
+
+
+```{r}
+# Load the SparkR library
+library(SparkR)
+sparkR.session()
+
+tendulkar1 <- read.df("/FileStore/tables/tendulkar.csv", 
+				header = "true", 
+				delimiter = ",", 
+				source = "csv", 
+				inferSchema = "true", 
+				na.strings = "")
+
+print(dim(tendulkar1))
+tendulkar1 <-SparkR::filter(tendulkar1,tendulkar1$Runs != "DNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "TDNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "absent")
+print(dim(tendulkar1))
+
+# Cast the string type Runs to double
+withColumn(tendulkar1, "Runs", cast(tendulkar1$Runs, "double"))
+head(SparkR::distinct(tendulkar1[,"Runs"]),20)
+# Remove the "* indicating not out
+tendulkar1$Runs=SparkR::regexp_replace(tendulkar1$Runs, "\\*", "")
+df=SparkR::select(tendulkar1,"*")
+df=SparkR::filter(tendulkar1, tendulkar1$Runs > 50)
+head(SparkR::collect(df))
+```
+
+
+```{r}
+sparkR.session()
+
+tendulkar1 <- read.df("/FileStore/tables/tendulkar.csv", 
+				header = "true", 
+				delimiter = ",", 
+				source = "csv", 
+				inferSchema = "true", 
+				na.strings = "")
+
+print(dim(tendulkar1))
+tendulkar1 <-SparkR::filter(tendulkar1,tendulkar1$Runs != "DNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "TDNB")
+print(dim(tendulkar1))
+tendulkar1<-SparkR::filter(tendulkar1,tendulkar1$Runs != "absent")
+print(dim(tendulkar1))
+
+# Cast the string type Runs to double
+withColumn(tendulkar1, "Runs", cast(tendulkar1$Runs, "double"))
+head(SparkR::distinct(tendulkar1[,"Runs"]),20)
+# Remove the "* indicating not out
+tendulkar1$Runs=SparkR::regexp_replace(tendulkar1$Runs, "\\*", "")
+head(SparkR::distinct(tendulkar1[,"Runs"]),20)
+df=SparkR::summarize(SparkR::groupBy(tendulkar1, tendulkar1$Ground), mean = mean(tendulkar1$Runs), minRuns=min(tendulkar1$Runs),maxRuns=max(tendulkar1$Runs))
+head(df,20)
+```
+
